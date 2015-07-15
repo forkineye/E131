@@ -31,13 +31,13 @@
 #	define _UDP WiFiUDP
 #	define INT_ESP8266
 #	define INT_WIFI
-#   define E131_DOUBLE_BUFFER
 #elif defined (ARDUINO_ARCH_AVR)
 #	include <Ethernet.h>
 #   include <EthernetUdp.h>
 #	include <avr/pgmspace.h>
 #	define _UDP EthernetUDP
 #	define INT_ETHERNET
+#   define NO_DOUBLE_BUFFER
 #endif
 
 /* E1.31 Defaults */
@@ -127,7 +127,7 @@ class E131 {
         static const uint8_t VECTOR_DMP = 2;
         
         e131_packet_t pbuff1;   /* Packet buffer */
-#ifdef E131_DOUBLE_BUFFER
+#ifndef NO_DOUBLE_BUFFER
         e131_packet_t pbuff2;   /* Double buffer */
 #endif
         e131_packet_t *pwbuff;  /* Pointer to working packet buffer */
@@ -193,7 +193,7 @@ class E131 {
                 udp.readBytes(pwbuff->raw, size);
                 error = validate();
                 if (!error) {
-#ifdef E131_DOUBLE_BUFFER
+#ifndef NO_DOUBLE_BUFFER
                     e131_packet_t *swap = packet;
                     packet = pwbuff;
                     pwbuff = swap;
