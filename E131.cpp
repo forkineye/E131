@@ -154,7 +154,7 @@ int E131::begin(uint8_t *mac, uint16_t port) {
     if (Serial) {
         Serial.println("");
         Serial.println(F("Requesting Address via DHCP"));
-        Serial.println(F("- MAC: "));
+        Serial.print(F("- MAC: "));
         for (int i = 0; i < sizeof(mac); i++)
             Serial.print(mac[i], HEX);
         Serial.println("");
