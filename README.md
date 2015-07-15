@@ -33,7 +33,7 @@ These are non-blocking handlers to be used in the ```loop()``` function of your 
 
 
 ### Latest Development:
-- GitHub: http://github.com/forkineye/e131
+- GitHub: http://github.com/forkineye/E131
 - Stuff: http://forkineye.com
 
 **This is currently a work in progress and incomplete**

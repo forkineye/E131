@@ -1,0 +1,6 @@
+Visual Micro/
+*.opensdf
+*.sdf
+*.vcxproj*
+*.sln
+*.suo

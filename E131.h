@@ -23,17 +23,20 @@
 #include "Arduino.h"
 #include "util.h"
 
-/* ESP8266 detection */
-#if defined (ESP8266)
-#   define _UDP WiFiUDP
+/* Network interface detection.  WiFi for ESP8266 and Ethernet for AVR */
+#if defined (ARDUINO_ARCH_ESP8266) 
 #   include <ESP8266WiFi.h>
 #   include <ESP8266WiFiMulti.h>
 #   include <WiFiUdp.h>
-#else
-#   define _UDP EthernetUDP
-#   define _ETHERNET_
-#   include <Ethernet.h>
+#	define _UDP WiFiUDP
+#	define INT_ESP8266
+#	define INT_WIFI
+#elif defined (ARDUINO_ARCH_AVR)
+#	include <Ethernet.h>
 #   include <EthernetUdp.h>
+#	include <avr/pgmspace.h>
+#	define _UDP EthernetUDP
+#	define INT_ETHERNET
 #endif
 
 /* E1.31 Defaults */
@@ -93,7 +96,7 @@ typedef union {
         uint16_t address_increment;
         uint16_t property_value_count;
         byte     property_values[513];
-	} __attribute__((packed));
+    } __attribute__((packed));
 
     byte raw[638];
 } e131_packet_t;
@@ -127,8 +130,8 @@ class E131 {
         _UDP udp;                       /* UDP handle */
 
         /* Internal Initializers */
-        void initWiFi(const char *ssid, const char *passphrase);
-        void initEthernet();
+        int initWiFi(const char *ssid, const char *passphrase);
+        int initEthernet(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns);
         void initUnicast(uint16_t port);
         void initMulticast(uint16_t universe);
 
@@ -140,17 +143,37 @@ class E131 {
 
         E131();
 
+/****** START - Wireless ifdef block ******/
+#if defined (INT_WIFI) || defined (INT_ESP8266)
         /* Unicast WiFi Initializers */
         int begin(const char *ssid);
         int begin(const char *ssid, uint16_t port);
         int begin(const char *ssid, const char *passphrase);
         int begin(const char *ssid, const char *passphrase, uint16_t port);
+#endif
+/****** END - Wireless ifdef block ******/
 
-        /* Multicast WiFi Initializers  -- ESP8266 */
+/****** START - ESP8266 ifdef block ******/
+#if defined (INT_ESP8266)
+        /* Multicast WiFi Initializers  -- ESP8266 Only */
         int beginMulticast(const char *ssid, uint16_t universe);
         int beginMulticast(const char *ssid, const char *passphrase, uint16_t universe);
+#endif
+/****** END - ESP8266 ifdef block ******/
 
-        //TODO - add Ethernet Initializers
+/****** START - Ethernet ifdef block ******/
+#if defined (INT_ETHERNET)		
+        /* Unicast Ethernet Initializers */
+        int begin(uint8_t *mac);
+        int begin(uint8_t *mac, uint16_t port);
+        void begin(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns);
+        void begin(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns, uint16_t port);
+
+        /* Multicast Ethernet Initializers */
+        int beginMulticast(uint8_t *mac, uint16_t universe);
+        void beginMulticast(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns, uint16_t universe);
+#endif
+/****** END - Ethernet ifdef block ******/
 
         /* Diag functions */
         void dumpError(e131_error_t error);
@@ -177,7 +200,8 @@ class E131 {
                     }
                     stats.num_packets++;
                 } else {
-                    dumpError(error);
+                    if (Serial)
+                        dumpError(error);
                 }
             }
             return retval;
@@ -185,7 +209,11 @@ class E131 {
 
         /* Packet validater */
         inline e131_error_t validate() {
+#ifdef ARDUINO_ARCH_AVR
+            if (memcmp_P(pwbuff->acn_id, ACN_ID, sizeof(pwbuff->acn_id)))
+#else
             if (memcmp(pwbuff->acn_id, ACN_ID, sizeof(pwbuff->acn_id)))
+#endif
                 return ERROR_ACN_ID;
             if (htonl(pwbuff->root_vector) != VECTOR_ROOT)
                 return ERROR_VECTOR_ROOT;
