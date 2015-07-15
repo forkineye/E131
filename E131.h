@@ -31,6 +31,7 @@
 #	define _UDP WiFiUDP
 #	define INT_ESP8266
 #	define INT_WIFI
+#   define E131_DOUBLE_BUFFER
 #elif defined (ARDUINO_ARCH_AVR)
 #	include <Ethernet.h>
 #   include <EthernetUdp.h>
@@ -104,6 +105,7 @@ typedef union {
 typedef struct {
     uint32_t    num_packets;
     uint32_t    sequence_errors;
+    uint32_t    packet_errors;
 } e131_stats_t;
 
 /* Error Types */
@@ -124,10 +126,13 @@ class E131 {
         static const uint32_t VECTOR_FRAME = 2;
         static const uint8_t VECTOR_DMP = 2;
         
-        e131_packet_t pbuff1, pbuff2;   /* Packet buffers */
-        e131_packet_t *pwbuff;          /* Pointer to working packet buffer */
-        uint8_t       sequence;         /* Sequence tracker */
-        _UDP udp;                       /* UDP handle */
+        e131_packet_t pbuff1;   /* Packet buffer */
+#ifdef E131_DOUBLE_BUFFER
+        e131_packet_t pbuff2;   /* Double buffer */
+#endif
+        e131_packet_t *pwbuff;  /* Pointer to working packet buffer */
+        uint8_t       sequence; /* Sequence tracker */
+        _UDP udp;               /* UDP handle */
 
         /* Internal Initializers */
         int initWiFi(const char *ssid, const char *passphrase);
@@ -188,9 +193,11 @@ class E131 {
                 udp.readBytes(pwbuff->raw, size);
                 error = validate();
                 if (!error) {
+#ifdef E131_DOUBLE_BUFFER
                     e131_packet_t *swap = packet;
                     packet = pwbuff;
                     pwbuff = swap;
+#endif
                     universe = htons(packet->universe);
                     data = packet->property_values + 1;
                     retval = htons(packet->property_value_count) - 1;
@@ -202,6 +209,7 @@ class E131 {
                 } else {
                     if (Serial)
                         dumpError(error);
+                    stats.packet_errors++;
                 }
             }
             return retval;
