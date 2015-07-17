@@ -28,6 +28,7 @@
 #   include <ESP8266WiFi.h>
 #   include <ESP8266WiFiMulti.h>
 #   include <WiFiUdp.h>
+#   include "E131Web.h"
 #	define _UDP WiFiUDP
 #	define INT_ESP8266
 #	define INT_WIFI
@@ -234,4 +235,3 @@ class E131 {
 };
 
 #endif
-
