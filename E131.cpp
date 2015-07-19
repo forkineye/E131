@@ -1,5 +1,5 @@
 /*
-* E131.h
+* E131.cpp
 *
 * Project: E131 - E.131 (sACN) library for Arduino
 * Copyright (c) 2015 Shelby Merrick
@@ -57,15 +57,15 @@ void E131::initUnicast(uint16_t port) {
 
 void E131::initMulticast(uint16_t universe) {
     delay(100);
-    IPAddress multicast = IPAddress(239, 255, ((universe >> 8) & 0xff), ((universe >> 0) & 0xff));
+    IPAddress address = IPAddress(239, 255, ((universe >> 8) & 0xff), ((universe >> 0) & 0xff));
 #ifdef INT_ESP8266
-    udp.beginMulticast(WiFi.localIP(), multicast, E131_DEF_PORT);
+    udp.beginMulticast(WiFi.localIP(), address, E131_DEF_PORT);
 #endif
     if (Serial) {
         Serial.print(F("- Universe: "));
         Serial.println(universe);
         Serial.print(F("- Multicast address: "));
-        Serial.println(multicast);
+        Serial.println(address);
     }
 }
 
@@ -187,7 +187,7 @@ void E131::begin(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway
         Serial.println("");
         Serial.println(F("Static Configuration"));
         Serial.println(F("- MAC: "));
-        for (int i = 0; i < sizeof(mac); i++)
+        for (int i = 0; i < 6; i++)
             Serial.print(mac[i], HEX);
         Serial.print(F("- IP Address: "));
         Serial.println(Ethernet.localIP());

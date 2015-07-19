@@ -28,7 +28,6 @@
 #   include <ESP8266WiFi.h>
 #   include <ESP8266WiFiMulti.h>
 #   include <WiFiUdp.h>
-#   include "E131Web.h"
 #	define _UDP WiFiUDP
 #	define INT_ESP8266
 #	define INT_WIFI
@@ -103,6 +102,7 @@ typedef union {
     byte raw[638];
 } e131_packet_t;
 
+/* Status structure */
 typedef struct {
     uint32_t    num_packets;
     uint32_t    sequence_errors;
@@ -142,10 +142,10 @@ class E131 {
         void initMulticast(uint16_t universe);
 
 	public:
-        byte          *data;        /* Pointer to DMX channel data from last valid packet */
-        uint16_t      universe = 0; /* DMX Universe of last valid packet */
-        e131_packet_t *packet;      /* Pointer to last valid packet */
-        e131_stats_t  stats;        /* Statistics tracker */
+        byte          *data;                /* Pointer to DMX channel data */
+        uint16_t      universe;             /* DMX Universe of last valid packet */
+        e131_packet_t *packet;              /* Pointer to last valid packet */
+        e131_stats_t  stats;                /* Statistics tracker */
 
         E131();
 
