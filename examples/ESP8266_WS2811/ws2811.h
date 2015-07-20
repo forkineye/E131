@@ -1,0 +1,1 @@
+extern "C" void ICACHE_RAM_ATTR do2811(uint8_t pin, uint8_t *pixels, uint32_t numBytes);

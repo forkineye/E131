@@ -1,6 +1,6 @@
 /*
-* E131_ESP8266_Test.ino - Simple sketch to listen for E1.31 data on an ESP8266 
-*                         and print some statistics.
+* ESP8266_Test.ino - Simple sketch to listen for E1.31 data on an ESP8266 
+*                    and print some statistics.
 *
 * Project: E131 - E.131 (sACN) library for Arduino
 * Copyright (c) 2015 Shelby Merrick

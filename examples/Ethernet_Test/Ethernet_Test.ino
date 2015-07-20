@@ -1,7 +1,6 @@
 /*
-* E131_Ethernet_WS2811.ino - Simple sketch to listen for E1.31 data on an 
-*                            UNO Ethernet shield and drive WS2811 LEDs.
-*                            Requires FastLED
+* Ethernet_Test.ino - Simple sketch to listen for E1.31 data on an 
+*                     UNO Ethernet shield and print some statistics.
 *
 * Project: E131 - E.131 (sACN) library for Arduino
 * Copyright (c) 2015 Shelby Merrick
@@ -21,10 +20,6 @@
 #include <SPI.h>
 #include <Ethernet.h>
 #include <E131.h>
-#include <FastLED.h>
-
-#define NUM_PIXELS 170
-#define DATA_PIN 3
 
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0x2F, 0x1E, 0xE3 };
 
@@ -36,12 +31,23 @@ void setup() {
 
     /* Configure via DHCP and listen Unicast on the default port */
     e131.begin(mac);
-
-    FastLED.addLeds<WS2811, DATA_PIN>((CRGB*)e131.data, NUM_PIXELS);
 }
 
 void loop() {
-    /* Parse a packet and update pixels */
-    if(e131.parsePacket())
-        FastLED.show();
+    /* Parse a packet */
+    uint16_t num_channels = e131.parsePacket();
+    
+    /* Process channel data if we have it */
+    if (num_channels) {
+        Serial.print(F("Universe "));
+        Serial.print(e131.universe);
+        Serial.print(F(" / "));
+        Serial.print(num_channels);
+        Serial.print(F(" Channels | Packets: "));
+        Serial.print(e131.stats.num_packets);
+        Serial.print(F(" / Sequence Errors: "));
+        Serial.print(e131.stats.sequence_errors);
+        Serial.print(F(" / CH1: "));
+        Serial.println(e131.data[0]);
+    }
 }

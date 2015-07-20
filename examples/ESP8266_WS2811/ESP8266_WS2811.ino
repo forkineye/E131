@@ -1,7 +1,6 @@
 /*
-* E131_ESP8266_Web.ino - Simple sketch to listen for E1.31 data on an ESP8266 
-*                        and print some statistics.  Also starts a webserver on
-*                        port 80 for configuration and status.
+* ESP8266_WS2811.ino - Simple sketch to listen for E1.31 data on an ESP8266
+*                      and drive WS2811 LEDs.
 *
 * Project: E131 - E.131 (sACN) library for Arduino
 * Copyright (c) 2015 Shelby Merrick
@@ -24,6 +23,10 @@
 #include <EEPROM.h>
 #include <E131.h>
 #include <E131Web.h>
+#include "ws2811.h"
+
+#define NUM_PIXELS 170
+#define DATA_PIN 0  /* GPIO0 */
 
 const char ssid[] = "mywifi";               /* Replace with your SSID */
 const char passphrase[] = "supersecret";    /* Replace with your WPA2 passphrase */
@@ -37,27 +40,17 @@ void setup() {
 
     /* Choose one to begin listening for E1.31 data */
     e131.begin(ssid, passphrase);               /* via Unicast on the default port */
-    e131.beginMulticast(ssid, passphrase, 1);   /* via Multicast for Universe 1 */
+    //e131.beginMulticast(ssid, passphrase, 1); /* via Multicast for Universe 1 */
+
+   /* Start the web server */
     webserver.begin();
 }
 
 void loop() {
-    /* Parse a packet */
-    uint16_t num_channels = e131.parsePacket();
-    
-    /* Process channel data if we have it */
-    if (num_channels) {
-        Serial.print("Universe ");
-        Serial.print(e131.universe);
-        Serial.print(" / ");
-        Serial.print(num_channels);
-        Serial.print(" Channels | Packets: ");
-        Serial.print(e131.stats.num_packets);
-        Serial.print(" / Sequence Errors: ");
-        Serial.print(e131.stats.sequence_errors);
-        Serial.print(" / CH1: ");
-        Serial.println(e131.data[0]);
-    }
+     /* Parse a packet and update pixels */
+    if(e131.parsePacket())
+        do2811(DATA_PIN, e131.data, NUM_PIXELS * 3);
 
+    /* Handle incoming web requests if needed */
     webserver.handleClient();
 }

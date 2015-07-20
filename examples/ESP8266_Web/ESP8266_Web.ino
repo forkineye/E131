@@ -1,6 +1,7 @@
 /*
-* E131_Ethernet_Test.ino - Simple sketch to listen for E1.31 data on an 
-*                          UNO Ethernet shield and print some statistics.
+* ESP8266_Web.ino - Simple sketch to listen for E1.31 data on an ESP8266 
+*                   and print some statistics.  Also starts a webserver on
+*                   port 80 for configuration and status.
 *
 * Project: E131 - E.131 (sACN) library for Arduino
 * Copyright (c) 2015 Shelby Merrick
@@ -17,20 +18,27 @@
 *  or use of these programs.
 *
 */
-#include <SPI.h>
-#include <Ethernet.h>
-#include <E131.h>
 
-byte mac[] = { 0xDE, 0xAD, 0xBE, 0x2F, 0x1E, 0xE3 };
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+#include <EEPROM.h>
+#include <E131.h>
+#include <E131Web.h>
+
+const char ssid[] = "mywifi";               /* Replace with your SSID */
+const char passphrase[] = "supersecret";    /* Replace with your WPA2 passphrase */
 
 E131 e131;
+E131Web webserver(&e131);
 
 void setup() {
     Serial.begin(115200);
     delay(10);
 
-    /* Configure via DHCP and listen Unicast on the default port */
-    e131.begin(mac);
+    /* Choose one to begin listening for E1.31 data */
+    e131.begin(ssid, passphrase);               /* via Unicast on the default port */
+    e131.beginMulticast(ssid, passphrase, 1);   /* via Multicast for Universe 1 */
+    webserver.begin();
 }
 
 void loop() {
@@ -39,15 +47,17 @@ void loop() {
     
     /* Process channel data if we have it */
     if (num_channels) {
-        Serial.print(F("Universe "));
+        Serial.print("Universe ");
         Serial.print(e131.universe);
-        Serial.print(F(" / "));
+        Serial.print(" / ");
         Serial.print(num_channels);
-        Serial.print(F(" Channels | Packets: "));
+        Serial.print(" Channels | Packets: ");
         Serial.print(e131.stats.num_packets);
-        Serial.print(F(" / Sequence Errors: "));
+        Serial.print(" / Sequence Errors: ");
         Serial.print(e131.stats.sequence_errors);
-        Serial.print(F(" / CH1: "));
+        Serial.print(" / CH1: ");
         Serial.println(e131.data[0]);
     }
+
+    webserver.handleClient();
 }

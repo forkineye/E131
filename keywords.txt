@@ -1,4 +1,5 @@
 E131			KEYWORD1
+E131Web         KEYWORD1
 data			KEYWORD2
 universe		KEYWORD2
 packet 			KEYWORD2
@@ -6,3 +7,4 @@ stats			KEYWORD2
 begin			KEYWORD3
 beginMulticast	KEYWORD3
 parsePacket		KEYWORD3
+handleClient    KEYWORD3
