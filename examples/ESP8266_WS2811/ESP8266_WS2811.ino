@@ -47,10 +47,10 @@ void setup() {
 }
 
 void loop() {
-     /* Parse a packet and update pixels */
-    if(e131.parsePacket())
-        do2811(DATA_PIN, e131.data, NUM_PIXELS * 3);
-
     /* Handle incoming web requests if needed */
     webserver.handleClient();
+
+    /* Parse a packet and update pixels */
+    if(e131.parsePacket())
+        do2811(DATA_PIN, e131.data, NUM_PIXELS * 3);
 }

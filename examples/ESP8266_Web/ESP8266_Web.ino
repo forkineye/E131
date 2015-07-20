@@ -42,6 +42,9 @@ void setup() {
 }
 
 void loop() {
+    /* Handle incoming web requests if needed */
+    webserver.handleClient();
+
     /* Parse a packet */
     uint16_t num_channels = e131.parsePacket();
     
@@ -58,6 +61,4 @@ void loop() {
         Serial.print(" / CH1: ");
         Serial.println(e131.data[0]);
     }
-
-    webserver.handleClient();
 }
