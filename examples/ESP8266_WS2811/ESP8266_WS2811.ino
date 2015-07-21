@@ -55,6 +55,9 @@ void loop() {
     webserver.handleClient();
 
     /* Parse a packet and update pixels */
-    if(e131.parsePacket())
+    if(e131.parsePacket()) {
+        noInterrupts();
         do2811(DATA_PIN, e131.data, NUM_PIXELS * 3);
+        interrupts();
+    }
 }
