@@ -44,6 +44,10 @@ void setup() {
 
    /* Start the web server */
     webserver.begin();
+
+    /* Initialize output */
+    pinMode(DATA_PIN, OUTPUT);
+    digitalWrite(DATA_PIN, LOW);
 }
 
 void loop() {
