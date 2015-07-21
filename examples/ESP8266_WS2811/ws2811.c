@@ -38,6 +38,9 @@ void ICACHE_RAM_ATTR do2811(uint8_t pin, uint8_t *pixels, uint32_t numBytes) {
   time1  = CYCLES_800_T1H;
   period = CYCLES_800;
 
+  /* Disable interrupts */
+  noInterrupts();
+
   for(t = time0;; t = time0) {
     if(pix & mask) t = time1;                             // Bit high duration
     while(((c = _getCycleCount()) - startTime) < period); // Wait for bit start
@@ -52,6 +55,9 @@ void ICACHE_RAM_ATTR do2811(uint8_t pin, uint8_t *pixels, uint32_t numBytes) {
     }
   }
   while((_getCycleCount() - startTime) < period); // Wait for last bit
+
+  /* Enable interrupts */
+  interrupts();
 }
 
 #endif
