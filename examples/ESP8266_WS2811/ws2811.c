@@ -10,6 +10,7 @@
 #ifdef ESP8266
 
 #include <Arduino.h>
+#include <eagle_soc.h>
 
 #define CYCLES_800_T0H  (F_CPU / 2500000) // 0.4us
 #define CYCLES_800_T1H  (F_CPU / 1250000) // 0.8us

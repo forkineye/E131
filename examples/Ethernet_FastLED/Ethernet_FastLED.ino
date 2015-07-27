@@ -1,7 +1,8 @@
 /*
-* Ethernet_WS2811.ino - Simple sketch to listen for E1.31 data on an 
-*                       UNO Ethernet shield and drive WS2811 LEDs.
-*                       Requires FastLED
+* Ethernet_FastLED.ino - Simple sketch to listen for E1.31 data on an 
+*                        UNO Ethernet shield and drive WS2811 LEDs.
+*                        
+* == Requires FastLED - http://github.com/FastLED/FastLED
 *
 * Project: E131 - E.131 (sACN) library for Arduino
 * Copyright (c) 2015 Shelby Merrick

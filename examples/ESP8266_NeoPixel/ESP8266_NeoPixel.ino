@@ -1,7 +1,8 @@
 /*
-* ESP8266_WS2811.ino - Simple sketch to listen for E1.31 data on an ESP8266
-*                      and drive WS2811 LEDs. Does not require any 3rd party 
-*                      libraries.
+* ESP8266_NeoPixel.ino - Simple sketch to listen for E1.31 data on an ESP8266
+*                        and drive WS2811 LEDs using the NeoPixel Library
+*
+* == Requires Adafruit_NeoPixel - http://github.com/adafruit/Adafruit_NeoPixel                        
 *
 * Project: E131 - E.131 (sACN) library for Arduino
 * Copyright (c) 2015 Shelby Merrick
@@ -21,10 +22,11 @@
 
 #include <ESP8266WiFi.h>
 #include <E131.h>
-#include "ws2811.h"
+#include <Adafruit_NeoPixel.h>
 
 #define NUM_PIXELS 170  /* Number of pixels */
 #define UNIVERSE 1      /* Universe to listen for */
+#define CHANNEL_START 1 /* Channel to start listening at */
 #define DATA_PIN 0      /* Pixel output - GPIO0 */
 
 const char ssid[] = "mywifi";               /* Replace with your SSID */
@@ -32,26 +34,30 @@ const char passphrase[] = "supersecret";    /* Replace with your WPA2 passphrase
 
 E131 e131;
 
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUM_PIXELS, DATA_PIN, NEO_RGB + NEO_KHZ800);
+
 void setup() {
     Serial.begin(115200);
     delay(10);
 
     /* Choose one to begin listening for E1.31 data */
-    e131.begin(ssid, passphrase);               /* via Unicast on the default port */
-    //e131.beginMulticast(ssid, passphrase, 1); /* via Multicast for Universe 1 */
+    e131.begin(ssid, passphrase);                       /* via Unicast on the default port */
+    //e131.beginMulticast(ssid, passphrase, UNIVERSE);  /* via Multicast for Universe 1 */
 
     /* Initialize output */
-    pinMode(DATA_PIN, OUTPUT);
-    digitalWrite(DATA_PIN, LOW);
+    pixels.begin();
+    pixels.show();
 }
 
 void loop() {
     /* Parse a packet and update pixels */
     if(e131.parsePacket()) {
         if (e131.universe == UNIVERSE) {
-            noInterrupts();
-            do2811(DATA_PIN, e131.data, NUM_PIXELS * 3);
-            interrupts();
+            for (int i = 0; i < NUM_PIXELS; i++) {
+                int j = i * 3 + (CHANNEL_START - 1);
+                pixels.setPixelColor(i, e131.data[j], e131.data[j+1], e131.data[j+2]);
+            }
+            pixels.show();
         }
     }
 }

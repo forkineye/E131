@@ -74,15 +74,15 @@ typedef union {
         /* Root Layer */
         uint16_t preamble_size;
         uint16_t postamble_size;
-        byte	 acn_id[12];
+        uint8_t	 acn_id[12];
         uint16_t root_flength;
         uint32_t root_vector;
-        byte     cid[16];
+        uint8_t     cid[16];
 
         /* Frame Layer */
         uint16_t frame_flength;
         uint32_t frame_vector;
-        byte     source_name[64];
+        uint8_t  source_name[64];
         uint8_t  priority;
         uint16_t reserved;
         uint8_t  sequence_number;
@@ -96,7 +96,7 @@ typedef union {
         uint16_t first_address;
         uint16_t address_increment;
         uint16_t property_value_count;
-        byte     property_values[513];
+        uint8_t  property_values[513];
     } __attribute__((packed));
 
     byte raw[638];
@@ -122,7 +122,7 @@ typedef enum {
 class E131 {
 	private:
         /* Constants for packet validation */
-        static const byte ACN_ID[];
+        static const uint8_t ACN_ID[];
         static const uint32_t VECTOR_ROOT = 4;
         static const uint32_t VECTOR_FRAME = 2;
         static const uint8_t VECTOR_DMP = 2;
@@ -142,7 +142,7 @@ class E131 {
         void initMulticast(uint16_t universe);
 
 	public:
-        byte          *data;                /* Pointer to DMX channel data */
+        uint8_t       *data;                /* Pointer to DMX channel data */
         uint16_t      universe;             /* DMX Universe of last valid packet */
         e131_packet_t *packet;              /* Pointer to last valid packet */
         e131_stats_t  stats;                /* Statistics tracker */
