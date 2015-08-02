@@ -100,7 +100,7 @@ int E131::initWiFi(const char *ssid, const char *passphrase) {
             retval = 0;
             if (Serial) {
                 Serial.println("");
-                Serial.print(F("*** Failed to connect ***"));
+                Serial.println(F("*** Failed to connect ***"));
             }
             break;
         }
