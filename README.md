@@ -17,15 +17,15 @@ These are to initialize the network stack and should be in the ```setup()``` fun
 
 ##### Unicast WiFi Initializers
 - ```int begin(const char *ssid, const char *passphrase)```: returns ```WiFi.status()```
-- ```int begin(const char *ssid, const char *passphrase, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns)```: returns ```WiFi.status()```
+- ```int begin(const char *ssid, const char *passphrase, IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns)```: returns ```WiFi.status()```
 
 ##### Multicast WiFi Initializers (ESP8266 Only)
 - ```int beginMulticast(const char *ssid, const char *passphrase, uint16_t universe)```: returns ```WiFi.status()```
-- ```int beginMulticast(const char *ssid, const char *passphrase, uint16_t universe, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns)```: returns ```WiFi.status()```
+- ```int beginMulticast(const char *ssid, const char *passphrase, uint16_t universe, IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns)```: returns ```WiFi.status()```
 
 ##### Unicast Ethernet Initializers
 - ```int begin(uint8_t *mac)```: DHCP initializer. Returns 0 if DHCP failed, 1 for success
-- ```void begin(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns)```: Static initializer
+- ```void begin(uint8_t *mac, IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns)```: Static initializer
 
 #### Loop Handlers
 These are non-blocking handlers to be used in the ```loop()``` function of your sketch.

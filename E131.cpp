@@ -123,9 +123,9 @@ int E131::begin(const char *ssid, const char *passphrase) {
 }
 
 int E131::begin(const char *ssid, const char *passphrase, 
-                IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns) {
+                IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns) {
     if (initWiFi(ssid, passphrase)) {
-        WiFi.config(ip, gateway, subnet, dns);
+        WiFi.config(ip, gateway, netmask, dns);
         if (Serial) {
             Serial.println("");
             Serial.print(F("Connected with Static IP: "));
@@ -154,9 +154,9 @@ int E131::beginMulticast(const char *ssid, const char *passphrase, uint16_t univ
 }
 
 int E131::beginMulticast(const char *ssid, const char *passphrase, uint16_t universe, 
-        IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns) {
+        IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns) {
     if (initWiFi(ssid, passphrase)) {
-        WiFi.config(ip, gateway, subnet, dns);
+        WiFi.config(ip, gateway, netmask, dns);
         if (Serial) {
             Serial.println("");
             Serial.print(F("Connected with Static IP: "));
@@ -203,8 +203,8 @@ int E131::begin(uint8_t *mac) {
 }
 
 void E131::begin(uint8_t *mac, 
-        IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns) {
-    Ethernet.begin(mac, ip, dns, gateway, subnet);
+        IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns) {
+    Ethernet.begin(mac, ip, dns, gateway, netmask);
     if (Serial) {
         Serial.println("");
         Serial.println(F("Static Configuration"));
@@ -224,7 +224,7 @@ int E131::beginMulticast(uint8_t *mac, uint16_t universe) {
 }
 
 void E131::beginMulticast(uint8_t *mac, uint16_t universe,
-        IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns) {
+        IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns) {
     //TODO: Add ethernet multicast support
 }
 #endif

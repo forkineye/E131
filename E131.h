@@ -138,7 +138,7 @@ class E131 {
 
         /* Internal Initializers */
         int initWiFi(const char *ssid, const char *passphrase);
-        int initEthernet(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns);
+        int initEthernet(uint8_t *mac, IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns);
         void initUnicast();
         void initMulticast(uint16_t universe);
 
@@ -155,7 +155,7 @@ class E131 {
         /* Unicast WiFi Initializers */
         int begin(const char *ssid, const char *passphrase);
         int begin(const char *ssid, const char *passphrase,
-                IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns);
+                IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns);
 #endif
 /****** END - Wireless ifdef block ******/
 
@@ -164,7 +164,7 @@ class E131 {
         /* Multicast WiFi Initializers  -- ESP8266 Only */
         int beginMulticast(const char *ssid, const char *passphrase, uint16_t universe);
         int beginMulticast(const char *ssid, const char *passphrase, uint16_t universe, 
-                IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns);
+                IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns);
 #endif
 /****** END - ESP8266 ifdef block ******/
 
@@ -173,12 +173,12 @@ class E131 {
         /* Unicast Ethernet Initializers */
         int begin(uint8_t *mac);
         void begin(uint8_t *mac,
-                IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns);
+                IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns);
 
         /* Multicast Ethernet Initializers */
         int beginMulticast(uint8_t *mac, uint16_t universe);
         void beginMulticast(uint8_t *mac, uint16_t universe,
-                IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns);
+                IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns);
 #endif
 /****** END - Ethernet ifdef block ******/
 
