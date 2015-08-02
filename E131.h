@@ -40,8 +40,9 @@
 #   define NO_DOUBLE_BUFFER
 #endif
 
-/* E1.31 Defaults */
-#define E131_DEF_PORT 5568
+/* Defaults */
+#define E131_DEFAULT_PORT 5568
+#define WIFI_CONNECT_TIMEOUT 10000  /* 10 seconds */
 
 /* E1.31 Packet Offsets */
 #define E131_ROOT_PREAMBLE_SIZE 0
@@ -77,7 +78,7 @@ typedef union {
         uint8_t	 acn_id[12];
         uint16_t root_flength;
         uint32_t root_vector;
-        uint8_t     cid[16];
+        uint8_t  cid[16];
 
         /* Frame Layer */
         uint16_t frame_flength;
@@ -99,7 +100,7 @@ typedef union {
         uint8_t  property_values[513];
     } __attribute__((packed));
 
-    byte raw[638];
+    uint8_t raw[638];
 } e131_packet_t;
 
 /* Status structure */
@@ -138,7 +139,7 @@ class E131 {
         /* Internal Initializers */
         int initWiFi(const char *ssid, const char *passphrase);
         int initEthernet(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns);
-        void initUnicast(uint16_t port);
+        void initUnicast();
         void initMulticast(uint16_t universe);
 
 	public:
@@ -152,18 +153,18 @@ class E131 {
 /****** START - Wireless ifdef block ******/
 #if defined (INT_WIFI) || defined (INT_ESP8266)
         /* Unicast WiFi Initializers */
-        int begin(const char *ssid);
-        int begin(const char *ssid, uint16_t port);
         int begin(const char *ssid, const char *passphrase);
-        int begin(const char *ssid, const char *passphrase, uint16_t port);
+        int begin(const char *ssid, const char *passphrase,
+                IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns);
 #endif
 /****** END - Wireless ifdef block ******/
 
 /****** START - ESP8266 ifdef block ******/
 #if defined (INT_ESP8266)
         /* Multicast WiFi Initializers  -- ESP8266 Only */
-        int beginMulticast(const char *ssid, uint16_t universe);
         int beginMulticast(const char *ssid, const char *passphrase, uint16_t universe);
+        int beginMulticast(const char *ssid, const char *passphrase, uint16_t universe, 
+                IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns);
 #endif
 /****** END - ESP8266 ifdef block ******/
 
@@ -171,13 +172,13 @@ class E131 {
 #if defined (INT_ETHERNET)		
         /* Unicast Ethernet Initializers */
         int begin(uint8_t *mac);
-        int begin(uint8_t *mac, uint16_t port);
-        void begin(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns);
-        void begin(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns, uint16_t port);
+        void begin(uint8_t *mac,
+                IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns);
 
         /* Multicast Ethernet Initializers */
         int beginMulticast(uint8_t *mac, uint16_t universe);
-        void beginMulticast(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns, uint16_t universe);
+        void beginMulticast(uint8_t *mac, uint16_t universe,
+                IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns);
 #endif
 /****** END - Ethernet ifdef block ******/
 

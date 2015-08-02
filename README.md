@@ -10,25 +10,22 @@ This library is to simplify the validation and handling of E1.31 sACN (DMX over 
 #### Notes
 - Double-buffering of packet data is disabled on AVR architectures due to memory constraints.  Make sure to check the return value of ```parsePacket()``` as your buffer may be trashed if a bad packet made its way in.
 - Other architectures (i.e. ESP8266) double buffer the packets, so ```e131.data``` can always be considered pristine.
+- WiFi connection attempts will timeout after 10 seconds if a successful connection has not been established.  ```WIFI_CONNECT_TIMEOUT``` can be changed in ```E131.h```.
 
 #### Initializers
 These are to initialize the network stack and should be in the ```setup()``` function of your sketch.
 
 ##### Unicast WiFi Initializers
-- ```int begin(const char *ssid)```: returns ```WiFi.status()```
-- ```int begin(const char *ssid, uint16_t port)```: returns ```WiFi.status()```
 - ```int begin(const char *ssid, const char *passphrase)```: returns ```WiFi.status()```
-- ```int begin(const char *ssid, const char *passphrase, uint16_t port)```: returns ```WiFi.status()```
+- ```int begin(const char *ssid, const char *passphrase, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns)```: returns ```WiFi.status()```
 
 ##### Multicast WiFi Initializers (ESP8266 Only)
-- ```int beginMulticast(const char *ssid, uint16_t universe)```: returns ```WiFi.status()```
 - ```int beginMulticast(const char *ssid, const char *passphrase, uint16_t universe)```: returns ```WiFi.status()```
+- ```int beginMulticast(const char *ssid, const char *passphrase, uint16_t universe, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns)```: returns ```WiFi.status()```
 
 ##### Unicast Ethernet Initializers
 - ```int begin(uint8_t *mac)```: DHCP initializer. Returns 0 if DHCP failed, 1 for success
-- ```int begin(uint8_t *mac, uint16_t port)```: DHCP initializer. Returns 0 if DHCP failed, 1 for success
 - ```void begin(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns)```: Static initializer
-- ```void begin(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns, uint16_t port)```: Static initializer
 
 #### Loop Handlers
 These are non-blocking handlers to be used in the ```loop()``` function of your sketch.
@@ -40,7 +37,6 @@ These are non-blocking handlers to be used in the ```loop()``` function of your 
 - ```e131_packet_t *packet```: Pointer to last packet. Always valid if double-buffering is enabled (see notes above)
 - ```e131_stats_t stats```: E1.31 Statistics
 
-
-### Latest Development:
-- GitHub: http://github.com/forkineye/E131
-- Stuff: http://forkineye.com
+### Resources:
+- Latest code: http://github.com/forkineye/E131
+- Other Stuff: http://forkineye.com

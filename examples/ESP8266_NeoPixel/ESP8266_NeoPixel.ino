@@ -29,8 +29,8 @@
 #define CHANNEL_START 1 /* Channel to start listening at */
 #define DATA_PIN 0      /* Pixel output - GPIO0 */
 
-const char ssid[] = "mywifi";               /* Replace with your SSID */
-const char passphrase[] = "supersecret";    /* Replace with your WPA2 passphrase */
+const char ssid[] = "........";         /* Replace with your SSID */
+const char passphrase[] = "........";   /* Replace with your WPA2 passphrase */
 
 E131 e131;
 

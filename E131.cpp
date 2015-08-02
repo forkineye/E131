@@ -46,12 +46,12 @@ E131::E131() {
     stats.packet_errors = 0;
 }
 
-void E131::initUnicast(uint16_t port) {
+void E131::initUnicast() {
     delay(100);
-    udp.begin(port);
+    udp.begin(E131_DEFAULT_PORT);
     if (Serial) {
         Serial.print(F("- Unicast port: "));
-        Serial.println(port);
+        Serial.println(E131_DEFAULT_PORT);
     }
 }
 
@@ -59,7 +59,7 @@ void E131::initMulticast(uint16_t universe) {
     delay(100);
     IPAddress address = IPAddress(239, 255, ((universe >> 8) & 0xff), ((universe >> 0) & 0xff));
 #ifdef INT_ESP8266
-    udp.beginMulticast(WiFi.localIP(), address, E131_DEF_PORT);
+    udp.beginMulticast(WiFi.localIP(), address, E131_DEFAULT_PORT);
 #endif
     if (Serial) {
         Serial.print(F("- Universe: "));
@@ -90,52 +90,81 @@ int E131::initWiFi(const char *ssid, const char *passphrase) {
     else
         WiFi.begin(ssid);
 
+    uint32_t timeout = millis();
+    uint8_t retval = 1;
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
         if (Serial)
             Serial.print(".");
-    }
-
-    if (Serial) {
-        Serial.println("");
-        Serial.print(F("Connected with IP: "));
-        Serial.println(WiFi.localIP());
+        if (millis() - timeout > WIFI_CONNECT_TIMEOUT) {
+            retval = 0;
+            if (Serial) {
+                Serial.println("");
+                Serial.print(F("*** Failed to connect ***"));
+            }
+            break;
+        }
     }
 
     //TODO: Add timeout and return false if we fail to connect -- handle in E131::begin
-    return 1;
-}
-
-int E131::begin(const char *ssid) {
-    return begin(ssid, NULL, E131_DEF_PORT);
-}
-
-int E131::begin(const char *ssid, uint16_t port) {
-    return begin(ssid, NULL, port);
+    return retval;
 }
 
 int E131::begin(const char *ssid, const char *passphrase) {
-    return begin(ssid, passphrase, E131_DEF_PORT);
-}
-
-int E131::begin(const char *ssid, const char *passphrase, uint16_t port) {
-    initWiFi(ssid, passphrase);
-    initUnicast(port);
+    if (initWiFi(ssid, passphrase)) {
+        if (Serial) {
+            Serial.println("");
+            Serial.print(F("Connected DHCP with IP: "));
+            Serial.println(WiFi.localIP());
+        }
+        initUnicast();
+    }
     return WiFi.status();
 }
+
+int E131::begin(const char *ssid, const char *passphrase, 
+                IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns) {
+    if (initWiFi(ssid, passphrase)) {
+        WiFi.config(ip, gateway, subnet, dns);
+        if (Serial) {
+            Serial.println("");
+            Serial.print(F("Connected with Static IP: "));
+            Serial.println(WiFi.localIP());
+        }    
+        initUnicast();
+    }
+    return WiFi.status();   
+}
+
 #endif  
 /****** END - Wireless ifdef block ******/
 
 /****** START - ESP8266 ifdef block ******/
 #if defined (INT_ESP8266)  
-int E131::beginMulticast(const char *ssid, uint16_t universe) {
-    beginMulticast(ssid, NULL, universe);
+int E131::beginMulticast(const char *ssid, const char *passphrase, uint16_t universe) {
+    if (initWiFi(ssid, passphrase)) {
+        if (Serial) {
+            Serial.println("");
+            Serial.print(F("Connected DHCP with IP: "));
+            Serial.println(WiFi.localIP());
+        }    
+        initMulticast(universe);
+    }
+    return WiFi.status();
 }
 
-int E131::beginMulticast(const char *ssid, const char *passphrase, uint16_t universe) {
-    initWiFi(ssid, passphrase);
-    initMulticast(universe);
-    return WiFi.status();
+int E131::beginMulticast(const char *ssid, const char *passphrase, uint16_t universe, 
+        IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns) {
+    if (initWiFi(ssid, passphrase)) {
+        WiFi.config(ip, gateway, subnet, dns);
+        if (Serial) {
+            Serial.println("");
+            Serial.print(F("Connected with Static IP: "));
+            Serial.println(WiFi.localIP());
+        }        
+        initMulticast(universe);
+    }
+    return WiFi.status();   
 }
 #endif
 /****** END - ESP8266 ifdef block ******/
@@ -145,17 +174,13 @@ int E131::beginMulticast(const char *ssid, const char *passphrase, uint16_t univ
 
 /* Unicast Ethernet Initializers */
 int E131::begin(uint8_t *mac) {
-    begin(mac, E131_DEF_PORT);
-}
-
-int E131::begin(uint8_t *mac, uint16_t port) {
     int retval = 0;
 
     if (Serial) {
         Serial.println("");
         Serial.println(F("Requesting Address via DHCP"));
         Serial.print(F("- MAC: "));
-        for (int i = 0; i < sizeof(mac); i++)
+        for (int i = 0; i < 6; i++)
             Serial.print(mac[i], HEX);
         Serial.println("");
     }
@@ -172,16 +197,13 @@ int E131::begin(uint8_t *mac, uint16_t port) {
     }
 
     if (retval)
-        initUnicast(port);
+        initUnicast();
 
     return retval;
 }
 
-void E131::begin(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns) {
-    begin(mac, ip, subnet, gateway, dns, E131_DEF_PORT);
-}
-
-void E131::begin(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns, uint16_t port) {
+void E131::begin(uint8_t *mac, 
+        IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns) {
     Ethernet.begin(mac, ip, dns, gateway, subnet);
     if (Serial) {
         Serial.println("");
@@ -193,7 +215,7 @@ void E131::begin(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway
         Serial.println(Ethernet.localIP());
     }
 
-    initUnicast(port);
+    initUnicast();
 }
 
 /* Multicast Ethernet Initializers */
@@ -201,10 +223,10 @@ int E131::beginMulticast(uint8_t *mac, uint16_t universe) {
     //TODO: Add ethernet multicast support
 }
 
-void E131::beginMulticast(uint8_t *mac, IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns, uint16_t universe) {
+void E131::beginMulticast(uint8_t *mac, uint16_t universe,
+        IPAddress ip, IPAddress subnet, IPAddress gateway, IPAddress dns) {
     //TODO: Add ethernet multicast support
 }
-
 #endif
 /****** END - Ethernet ifdef block ******/
 
