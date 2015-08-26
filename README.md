@@ -15,6 +15,10 @@ This library is to simplify the validation and handling of E1.31 sACN (DMX over 
 #### Initializers
 These are to initialize the network stack and should be in the ```setup()``` function of your sketch.
 
+##### Generic UDP only Initializer
+This initializer only sets up the UDP listener.  It is up to the user to setup their network connection.  The initializers below this one will setup the network connection for you.
+- ```void begin(e131_listen_t type, uint16_t universe = 1)```: valid types are ```E131_UNICAST``` and ```E131_MULTICAST```.  ```universe``` is optional and only used for Multicast configuration.
+
 ##### Unicast WiFi Initializers
 - ```int begin(const char *ssid, const char *passphrase)```: returns ```WiFi.status()```
 - ```int begin(const char *ssid, const char *passphrase, IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns)```: returns ```WiFi.status()```

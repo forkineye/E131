@@ -110,6 +110,13 @@ int E131::initWiFi(const char *ssid, const char *passphrase) {
     return retval;
 }
 
+void E131::begin(e131_listen_t type, uint16_t universe) {
+	if (type == E131_UNICAST)
+		initUnicast();
+	if (type == E131_MULTICAST)
+		initMulticast(universe);
+}
+
 int E131::begin(const char *ssid, const char *passphrase) {
     if (initWiFi(ssid, passphrase)) {
         if (Serial) {
@@ -156,7 +163,7 @@ int E131::beginMulticast(const char *ssid, const char *passphrase, uint16_t univ
 int E131::beginMulticast(const char *ssid, const char *passphrase, uint16_t universe, 
         IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns) {
     if (initWiFi(ssid, passphrase)) {
-        WiFi.config(ip, gateway, netmask, dns);
+        WiFi.config(ip, dns, gateway, netmask);
         if (Serial) {
             Serial.println("");
             Serial.print(F("Connected with Static IP: "));

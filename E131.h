@@ -120,6 +120,12 @@ typedef enum {
     ERROR_VECTOR_DMP
 } e131_error_t;
 
+/* E1.31 Listener Types */
+typedef enum {
+	E131_UNICAST,
+	E131_MULTICAST
+} e131_listen_t;
+
 class E131 {
 	private:
         /* Constants for packet validation */
@@ -149,6 +155,9 @@ class E131 {
         e131_stats_t  stats;                /* Statistics tracker */
 
         E131();
+
+        /* Generic UDP listener, no physical or IP configuration */
+    	void begin(e131_listen_t type, uint16_t universe = 1);
 
 /****** START - Wireless ifdef block ******/
 #if defined (INT_WIFI) || defined (INT_ESP8266)
