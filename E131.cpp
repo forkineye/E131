@@ -39,7 +39,7 @@ E131::E131() {
     packet = &pbuff1;
     pwbuff = &pbuff2;
 #endif
-    
+
     sequence = 0;
     stats.num_packets = 0;
     stats.sequence_errors = 0;
@@ -57,7 +57,8 @@ void E131::initUnicast() {
 
 void E131::initMulticast(uint16_t universe) {
     delay(100);
-    IPAddress address = IPAddress(239, 255, ((universe >> 8) & 0xff), ((universe >> 0) & 0xff));
+    IPAddress address = IPAddress(239, 255, ((universe >> 8) & 0xff),
+            ((universe >> 0) & 0xff));
 #ifdef INT_ESP8266
     udp.beginMulticast(WiFi.localIP(), address, E131_DEFAULT_PORT);
 #endif
@@ -84,7 +85,7 @@ int E131::initWiFi(const char *ssid, const char *passphrase) {
         Serial.print(F("Connecting to "));
         Serial.print(ssid);
     }
-	
+
     if (passphrase != NULL)
         WiFi.begin(ssid, passphrase);
     else
@@ -106,15 +107,14 @@ int E131::initWiFi(const char *ssid, const char *passphrase) {
         }
     }
 
-    //TODO: Add timeout and return false if we fail to connect -- handle in E131::begin
     return retval;
 }
 
 void E131::begin(e131_listen_t type, uint16_t universe) {
-	if (type == E131_UNICAST)
-		initUnicast();
-	if (type == E131_MULTICAST)
-		initMulticast(universe);
+    if (type == E131_UNICAST)
+        initUnicast();
+    if (type == E131_MULTICAST)
+        initMulticast(universe);
 }
 
 int E131::begin(const char *ssid, const char *passphrase) {
@@ -129,55 +129,57 @@ int E131::begin(const char *ssid, const char *passphrase) {
     return WiFi.status();
 }
 
-int E131::begin(const char *ssid, const char *passphrase, 
-                IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns) {
+int E131::begin(const char *ssid, const char *passphrase,
+        IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns) {
     if (initWiFi(ssid, passphrase)) {
         WiFi.config(ip, gateway, netmask, dns);
         if (Serial) {
             Serial.println("");
             Serial.print(F("Connected with Static IP: "));
             Serial.println(WiFi.localIP());
-        }    
+        }
         initUnicast();
     }
-    return WiFi.status();   
+    return WiFi.status();
 }
 
-#endif  
+#endif
 /****** END - Wireless ifdef block ******/
 
 /****** START - ESP8266 ifdef block ******/
-#if defined (INT_ESP8266)  
-int E131::beginMulticast(const char *ssid, const char *passphrase, uint16_t universe) {
+#if defined (INT_ESP8266)
+int E131::beginMulticast(const char *ssid, const char *passphrase,
+        uint16_t universe) {
     if (initWiFi(ssid, passphrase)) {
         if (Serial) {
             Serial.println("");
             Serial.print(F("Connected DHCP with IP: "));
             Serial.println(WiFi.localIP());
-        }    
+        }
         initMulticast(universe);
     }
     return WiFi.status();
 }
 
-int E131::beginMulticast(const char *ssid, const char *passphrase, uint16_t universe, 
-        IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns) {
+int E131::beginMulticast(const char *ssid, const char *passphrase,
+        uint16_t universe, IPAddress ip, IPAddress netmask,
+        IPAddress gateway, IPAddress dns) {
     if (initWiFi(ssid, passphrase)) {
         WiFi.config(ip, dns, gateway, netmask);
         if (Serial) {
             Serial.println("");
             Serial.print(F("Connected with Static IP: "));
             Serial.println(WiFi.localIP());
-        }        
+        }
         initMulticast(universe);
     }
-    return WiFi.status();   
+    return WiFi.status();
 }
 #endif
 /****** END - ESP8266 ifdef block ******/
 
 /****** START - Ethernet ifdef block ******/
-#if defined (INT_ETHERNET)  
+#if defined (INT_ETHERNET)
 
 /* Unicast Ethernet Initializers */
 int E131::begin(uint8_t *mac) {
@@ -209,8 +211,8 @@ int E131::begin(uint8_t *mac) {
     return retval;
 }
 
-void E131::begin(uint8_t *mac, 
-        IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns) {
+void E131::begin(uint8_t *mac, IPAddress ip, IPAddress netmask,
+        IPAddress gateway, IPAddress dns) {
     Ethernet.begin(mac, ip, dns, gateway, netmask);
     if (Serial) {
         Serial.println("");
