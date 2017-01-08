@@ -55,11 +55,22 @@ void E131::initUnicast() {
     }
 }
 
-void E131::initMulticast(uint16_t universe) {
+void E131::initMulticast(uint16_t universe, uint8_t n) {
     delay(100);
     IPAddress address = IPAddress(239, 255, ((universe >> 8) & 0xff),
             ((universe >> 0) & 0xff));
 #ifdef INT_ESP8266
+    ip_addr_t ifaddr;
+    ip_addr_t multicast_addr;
+
+    ifaddr.addr = static_cast<uint32_t>(WiFi.localIP());
+    for (uint8_t i = 1; i < n; i++) {
+        multicast_addr.addr = static_cast<uint32_t>(IPAddress(239, 255,
+                (((universe + i) >> 8) & 0xff), (((universe + i) >> 0)
+                & 0xff)));
+        igmp_joingroup(&ifaddr, &multicast_addr);
+    }
+
     udp.beginMulticast(WiFi.localIP(), address, E131_DEFAULT_PORT);
 #endif
     if (Serial) {
@@ -110,11 +121,11 @@ int E131::initWiFi(const char *ssid, const char *passphrase) {
     return retval;
 }
 
-void E131::begin(e131_listen_t type, uint16_t universe) {
+void E131::begin(e131_listen_t type, uint16_t universe, uint8_t n) {
     if (type == E131_UNICAST)
         initUnicast();
     if (type == E131_MULTICAST)
-        initMulticast(universe);
+        initMulticast(universe, n);
 }
 
 int E131::begin(const char *ssid, const char *passphrase) {
@@ -149,21 +160,21 @@ int E131::begin(const char *ssid, const char *passphrase,
 /****** START - ESP8266 ifdef block ******/
 #if defined (INT_ESP8266)
 int E131::beginMulticast(const char *ssid, const char *passphrase,
-        uint16_t universe) {
+        uint16_t universe, uint8_t n) {
     if (initWiFi(ssid, passphrase)) {
         if (Serial) {
             Serial.println("");
             Serial.print(F("Connected DHCP with IP: "));
             Serial.println(WiFi.localIP());
         }
-        initMulticast(universe);
+        initMulticast(universe, n);
     }
     return WiFi.status();
 }
 
 int E131::beginMulticast(const char *ssid, const char *passphrase,
         uint16_t universe, IPAddress ip, IPAddress netmask,
-        IPAddress gateway, IPAddress dns) {
+        IPAddress gateway, IPAddress dns, uint8_t n) {
     if (initWiFi(ssid, passphrase)) {
         WiFi.config(ip, dns, gateway, netmask);
         if (Serial) {
@@ -171,7 +182,7 @@ int E131::beginMulticast(const char *ssid, const char *passphrase,
             Serial.print(F("Connected with Static IP: "));
             Serial.println(WiFi.localIP());
         }
-        initMulticast(universe);
+        initMulticast(universe, n);
     }
     return WiFi.status();
 }
@@ -228,12 +239,13 @@ void E131::begin(uint8_t *mac, IPAddress ip, IPAddress netmask,
 }
 
 /* Multicast Ethernet Initializers */
-int E131::beginMulticast(uint8_t *mac, uint16_t universe) {
+int E131::beginMulticast(uint8_t *mac, uint16_t universe, uint8_t n) {
     //TODO: Add ethernet multicast support
 }
 
 void E131::beginMulticast(uint8_t *mac, uint16_t universe,
-        IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns) {
+        IPAddress ip, IPAddress netmask, IPAddress gateway,
+        IPAddress dns, uint8_t n) {
     //TODO: Add ethernet multicast support
 }
 #endif

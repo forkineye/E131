@@ -28,6 +28,8 @@
 #   include <ESP8266WiFi.h>
 #   include <ESP8266WiFiMulti.h>
 #   include <WiFiUdp.h>
+#   include <lwip/ip_addr.h>
+#   include <lwip/igmp.h>
 #   define _UDP WiFiUDP
 #   define INT_ESP8266
 #   define INT_WIFI
@@ -147,7 +149,7 @@ class E131 {
     int initEthernet(uint8_t *mac, IPAddress ip, IPAddress netmask,
             IPAddress gateway, IPAddress dns);
     void initUnicast();
-    void initMulticast(uint16_t universe);
+    void initMulticast(uint16_t universe, uint8_t n = 1);
 
  public:
     uint8_t       *data;                /* Pointer to DMX channel data */
@@ -158,7 +160,7 @@ class E131 {
     E131();
 
     /* Generic UDP listener, no physical or IP configuration */
-    void begin(e131_listen_t type, uint16_t universe = 1);
+    void begin(e131_listen_t type, uint16_t universe = 1, uint8_t n = 1);
 
 /****** START - Wireless ifdef block ******/
 #if defined (INT_WIFI) || defined (INT_ESP8266)
@@ -173,10 +175,10 @@ class E131 {
 #if defined (INT_ESP8266)
     /* Multicast WiFi Initializers  -- ESP8266 Only */
     int beginMulticast(const char *ssid, const char *passphrase,
-            uint16_t universe);
+            uint16_t universe, uint8_t n = 1);
     int beginMulticast(const char *ssid, const char *passphrase,
             uint16_t universe, IPAddress ip, IPAddress netmask,
-            IPAddress gateway, IPAddress dns);
+            IPAddress gateway, IPAddress dns, uint8_t n = 1);
 #endif
 /****** END - ESP8266 ifdef block ******/
 
@@ -188,9 +190,10 @@ class E131 {
             IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns);
 
     /* Multicast Ethernet Initializers */
-    int beginMulticast(uint8_t *mac, uint16_t universe);
+    int beginMulticast(uint8_t *mac, uint16_t universe, uint8_t n = 1);
     void beginMulticast(uint8_t *mac, uint16_t universe,
-            IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns);
+            IPAddress ip, IPAddress netmask, IPAddress gateway,
+            IPAddress dns, uint8_t n = 1);
 #endif
 /****** END - Ethernet ifdef block ******/
 
