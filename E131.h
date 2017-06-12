@@ -110,6 +110,8 @@ typedef struct {
     uint32_t    num_packets;
     uint32_t    sequence_errors;
     uint32_t    packet_errors;
+    IPAddress   last_clientIP;
+    uint16_t    last_clientPort;
 } e131_stats_t;
 
 /* Error Types */
@@ -223,6 +225,8 @@ class E131 {
                     sequence = packet->sequence_number + 1;
                 }
                 stats.num_packets++;
+                stats.last_clientIP = udp.remoteIP();
+                stats.last_clientPort = udp.remotePort();
             } else {
                 if (Serial)
                     dumpError(error);
