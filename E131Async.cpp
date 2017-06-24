@@ -190,6 +190,7 @@ void E131Async::parsePacket(AsyncUDPPacket _packet) {
         error = ERROR_VECTOR_DMP;
 
     if (!error) {
+        pbuff->add(pbuff, sbuff);
         if (sbuff->sequence_number != sequence++) {
             stats.sequence_errors++;
             sequence = sbuff->sequence_number + 1;
