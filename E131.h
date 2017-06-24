@@ -21,6 +21,7 @@
 #define E131_H_
 
 #include "Arduino.h"
+#include "E131common.h"
 #include "util.h"
 
 /* Network interface detection.  WiFi for ESP8266 and Ethernet for AVR */
@@ -42,69 +43,6 @@
 #   define NO_DOUBLE_BUFFER
 #endif
 
-/* Defaults */
-#define E131_DEFAULT_PORT 5568
-#define WIFI_CONNECT_TIMEOUT 10000  /* 10 seconds */
-
-/* E1.31 Packet Offsets */
-#define E131_ROOT_PREAMBLE_SIZE 0
-#define E131_ROOT_POSTAMBLE_SIZE 2
-#define E131_ROOT_ID 4
-#define E131_ROOT_FLENGTH 16
-#define E131_ROOT_VECTOR 18
-#define E131_ROOT_CID 22
-
-#define E131_FRAME_FLENGTH 38
-#define E131_FRAME_VECTOR 40
-#define E131_FRAME_SOURCE 44
-#define E131_FRAME_PRIORITY 108
-#define E131_FRAME_RESERVED 109
-#define E131_FRAME_SEQ 111
-#define E131_FRAME_OPT 112
-#define E131_FRAME_UNIVERSE 113
-
-#define E131_DMP_FLENGTH 115
-#define E131_DMP_VECTOR 117
-#define E131_DMP_TYPE 118
-#define E131_DMP_ADDR_FIRST 119
-#define E131_DMP_ADDR_INC 121
-#define E131_DMP_COUNT 123
-#define E131_DMP_DATA 125
-
-/* E1.31 Packet Structure */
-typedef union {
-    struct {
-        /* Root Layer */
-        uint16_t preamble_size;
-        uint16_t postamble_size;
-        uint8_t  acn_id[12];
-        uint16_t root_flength;
-        uint32_t root_vector;
-        uint8_t  cid[16];
-
-        /* Frame Layer */
-        uint16_t frame_flength;
-        uint32_t frame_vector;
-        uint8_t  source_name[64];
-        uint8_t  priority;
-        uint16_t reserved;
-        uint8_t  sequence_number;
-        uint8_t  options;
-        uint16_t universe;
-
-        /* DMP Layer */
-        uint16_t dmp_flength;
-        uint8_t  dmp_vector;
-        uint8_t  type;
-        uint16_t first_address;
-        uint16_t address_increment;
-        uint16_t property_value_count;
-        uint8_t  property_values[513];
-    } __attribute__((packed));
-
-    uint8_t raw[638];
-} e131_packet_t;
-
 /* Status structure */
 typedef struct {
     uint32_t    num_packets;
@@ -114,22 +52,6 @@ typedef struct {
     uint16_t    last_clientPort;
 } e131_stats_t;
 
-/* Error Types */
-typedef enum {
-    ERROR_NONE,
-    ERROR_ACN_ID,
-    ERROR_PACKET_SIZE,
-    ERROR_VECTOR_ROOT,
-    ERROR_VECTOR_FRAME,
-    ERROR_VECTOR_DMP
-} e131_error_t;
-
-/* E1.31 Listener Types */
-typedef enum {
-    E131_UNICAST,
-    E131_MULTICAST
-} e131_listen_t;
-
 class E131 {
  private:
     /* Constants for packet validation */
@@ -138,13 +60,13 @@ class E131 {
     static const uint32_t VECTOR_FRAME = 2;
     static const uint8_t VECTOR_DMP = 2;
 
-    e131_packet_t pbuff1;   /* Packet buffer */
+    e131_packet_t   pbuff1;     /* Packet buffer */
 #ifndef NO_DOUBLE_BUFFER
-    e131_packet_t pbuff2;   /* Double buffer */
+    e131_packet_t   pbuff2;     /* Double buffer */
 #endif
-    e131_packet_t *pwbuff;  /* Pointer to working packet buffer */
-    uint8_t       sequence; /* Sequence tracker */
-    _UDP udp;               /* UDP handle */
+    e131_packet_t   *pwbuff;    /* Pointer to working packet buffer */
+    uint8_t         sequence;   /* Sequence tracker */
+    _UDP            udp;        /* UDP handle */
 
     /* Internal Initializers */
     int initWiFi(const char *ssid, const char *passphrase);
