@@ -86,6 +86,7 @@ typedef union {
 /* Error Types */
 typedef enum {
     ERROR_NONE,
+    ERROR_IGNORE,
     ERROR_ACN_ID,
     ERROR_PACKET_SIZE,
     ERROR_VECTOR_ROOT,

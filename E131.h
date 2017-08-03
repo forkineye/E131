@@ -149,6 +149,8 @@ class E131 {
                 stats.num_packets++;
                 stats.last_clientIP = udp.remoteIP();
                 stats.last_clientPort = udp.remotePort();
+            } else if (error == ERROR_IGNORE) {
+                // Do nothing
             } else {
                 if (Serial)
                     dumpError(error);
@@ -172,6 +174,8 @@ class E131 {
             return ERROR_VECTOR_FRAME;
         if (pwbuff->dmp_vector != VECTOR_DMP)
             return ERROR_VECTOR_DMP;
+        if (pwbuff->property_values[0] != 0)
+            return ERROR_IGNORE;
         return ERROR_NONE;
     }
 };
