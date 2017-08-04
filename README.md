@@ -4,10 +4,11 @@ This library is to simplify the validation and handling of E1.31 sACN (DMX over 
 
 ### Supported Hardware
 - ESP8266
-- Arduino + Ethernet Shield (unicast until Arduino 1.66 is released)
+- Arduino + Ethernet Shield
 
 ### API / Usage
 #### Notes
+- If compiling for non-ESP8266 hardware (Arduino UNO, etc...), you must delete ```E131Async.h``` and ```E131Async.cpp``` as they are only supported for the ESP8266 and will not compile on other platforms.
 - Double-buffering of packet data is disabled on AVR architectures due to memory constraints.  Make sure to check the return value of ```parsePacket()``` as your buffer may be trashed if a bad packet made its way in.
 - Other architectures (i.e. ESP8266) double buffer the packets, so ```e131.data``` can always be considered pristine.  Double buffering can be disabled by defining ```NO_DOUBLE_BUFFER``` in ```E131.h```.
 - WiFi connection attempts will timeout after 10 seconds if a successful connection has not been established.  ```WIFI_CONNECT_TIMEOUT``` can be changed in ```E131.h```.

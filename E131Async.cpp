@@ -187,6 +187,9 @@ void E131Async::parsePacket(AsyncUDPPacket _packet) {
         error = ERROR_VECTOR_FRAME;
     if (sbuff->dmp_vector != E131Async::VECTOR_DMP)
         error = ERROR_VECTOR_DMP;
+    if (sbuff->property_values[0] != 0)
+        error = ERROR_IGNORE;
+
 
     if (!error) {
         pbuff->add(pbuff, sbuff);
@@ -197,6 +200,8 @@ void E131Async::parsePacket(AsyncUDPPacket _packet) {
         stats.num_packets++;
         stats.last_clientIP = _packet.remoteIP();
         stats.last_clientPort = _packet.remotePort();
+    } else if (error == ERROR_IGNORE) {
+        // Do nothing
     } else {
         if (Serial)
             dumpError(error);
