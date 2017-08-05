@@ -74,8 +74,6 @@ void E131::initMulticast(uint16_t universe, uint8_t n) {
     udp.beginMulticast(WiFi.localIP(), address, E131_DEFAULT_PORT);
 #endif
     if (Serial) {
-        Serial.print(F("- Universe: "));
-        Serial.println(universe);
         Serial.println(F("- Multicast Enabled"));
     }
 }

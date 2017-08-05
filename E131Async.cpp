@@ -66,8 +66,6 @@ void E131Async::initMulticast(uint16_t universe, uint8_t n) {
         }
 
         if (Serial) {
-            Serial.print(F("- Universe: "));
-            Serial.println(universe);
             Serial.println(F("- Multicast Enabled"));
         }
 
