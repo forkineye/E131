@@ -41,15 +41,11 @@ void loop() {
     
     /* Process channel data if we have it */
     if (num_channels) {
-        Serial.print("Universe ");
-        Serial.print(e131.universe);
-        Serial.print(" / ");
-        Serial.print(num_channels);
-        Serial.print(" Channels | Packets: ");
-        Serial.print(e131.stats.num_packets);
-        Serial.print(" / Sequence Errors: ");
-        Serial.print(e131.stats.sequence_errors);
-        Serial.print(" / CH1: ");
-        Serial.println(e131.data[0]);
+        Serial.printf("Universe %u / %u Channels | Packet#: %u / Errors: %u / CH1: %u\n",
+                e131.universe,              // The Universe for this packet
+                num_channels,               // Number of channels in this packet
+                e131.stats.num_packets,     // Packet counter
+                e131.stats.packet_errors,   // Packet error counter
+                e131.data[0]);              // Dimmer data for Channel 1
     }
 }

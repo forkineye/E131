@@ -1,9 +1,15 @@
-E131            KEYWORD1
-data            KEYWORD2
-universe        KEYWORD2
-packet          KEYWORD2
-stats           KEYWORD2
-begin           KEYWORD3
-beginMulticast  KEYWORD3
-dumpError       KEYWORD3
-parsePacket     KEYWORD3
+# Data Types
+E131	KEYWORD1
+e131_packet_t	KEYWORD1
+e131_error_t	KEYWORD1
+e131_stats_t	KEYWORD1
+
+# Members
+begin	KEYWORD2
+beginMulticast	KEYWORD2
+dumpError	KEYWORD2
+parsePacket	KEYWORD2
+data	KEYWORD2
+universe	KEYWORD2
+packet	KEYWORD2
+stats	KEYWORD2

@@ -40,9 +40,7 @@ E131::E131() {
     pwbuff = &pbuff2;
 #endif
 
-    sequence = 0;
     stats.num_packets = 0;
-    stats.sequence_errors = 0;
     stats.packet_errors = 0;
 }
 

@@ -43,10 +43,10 @@ void loop() {
         Serial.print(e131.universe);
         Serial.print(F(" / "));
         Serial.print(num_channels);
-        Serial.print(F(" Channels | Packets: "));
+        Serial.print(F(" Channels | Packet#: "));
         Serial.print(e131.stats.num_packets);
-        Serial.print(F(" / Sequence Errors: "));
-        Serial.print(e131.stats.sequence_errors);
+        Serial.print(F(" / Errors: "));
+        Serial.print(e131.stats.packet_errors);
         Serial.print(F(" / CH1: "));
         Serial.println(e131.data[0]);
     }
