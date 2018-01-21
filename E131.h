@@ -161,7 +161,7 @@ class E131 {
     E131();
 
     /* Maps a DMX universe to the correct multicast IP */
-    IPAddress multicastIPFor(uint16_t universe);
+    static IPAddress multicastIPFor(uint16_t universe);
 
     /* Generic UDP listener, no physical or IP configuration */
     void begin(e131_listen_t type, uint16_t universe = 1, uint8_t n = 1);
