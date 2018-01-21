@@ -29,15 +29,15 @@ const byte E131::ACN_ID[12] = { 0x41, 0x53, 0x43, 0x2d, 0x45, 0x31, 0x2e, 0x31, 
 
 /* Constructor */
 E131::E131() {
-#ifndef DOUBLE_BUFFER
-    memset(pbuff1.raw, 0, sizeof(pbuff1.raw));
-    packet = &pbuff1;
-    pwbuff = packet;
-#else
+#ifdef DOUBLE_BUFFER
     memset(pbuff1.raw, 0, sizeof(pbuff1.raw));
     memset(pbuff2.raw, 0, sizeof(pbuff2.raw));
     packet = &pbuff1;
     pwbuff = &pbuff2;
+#else
+    memset(pbuff1.raw, 0, sizeof(pbuff1.raw));
+    packet = &pbuff1;
+    pwbuff = packet;
 #endif
 
     stats.num_packets = 0;
