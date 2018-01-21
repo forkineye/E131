@@ -53,19 +53,23 @@ void E131::initUnicast() {
     }
 }
 
+IPAddress E131::multicastIPFor(uint16_t universe) {
+    return IPAddress(239, 255,
+            ((universe >> 8) & 0xff),
+            ((universe >> 0) & 0xff)
+    );
+}
+
 void E131::initMulticast(uint16_t universe, uint8_t n) {
     delay(100);
-    IPAddress address = IPAddress(239, 255, ((universe >> 8) & 0xff),
-            ((universe >> 0) & 0xff));
+    IPAddress address = multicastIPFor(universe);
 #ifdef INT_ESP8266
     ip_addr_t ifaddr;
     ip_addr_t multicast_addr;
 
     ifaddr.addr = static_cast<uint32_t>(WiFi.localIP());
     for (uint8_t i = 1; i < n; i++) {
-        multicast_addr.addr = static_cast<uint32_t>(IPAddress(239, 255,
-                (((universe + i) >> 8) & 0xff), (((universe + i) >> 0)
-                & 0xff)));
+        multicast_addr.addr = static_cast<uint32_t>(MulticastIPFor(universe + i));
         igmp_joingroup(&ifaddr, &multicast_addr);
     }
 
