@@ -53,6 +53,13 @@ void E131::initUnicast() {
     }
 }
 
+/*
+ * Converts a DMX 'universe' to the corresponding e131 multicast address.
+ *
+ * e131 mandates a fixed multicase base-IP of 239.255.0.0, to which
+ * the (two-byte, 1-63.999) universe value is added.
+ * (effectively defining the last two positions of the IP)
+ */
 IPAddress E131::multicastIPFor(uint16_t universe) {
     return IPAddress(239, 255,
             ((universe >> 8) & 0xff),
