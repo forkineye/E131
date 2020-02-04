@@ -4,3 +4,5 @@ Visual Micro/
 *.vcxproj*
 *.sln
 *.suo
+.development
+E131.ino

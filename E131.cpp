@@ -235,7 +235,44 @@ void E131::begin(uint8_t *mac, IPAddress ip, IPAddress netmask,
 
 /* Multicast Ethernet Initializers */
 int E131::beginMulticast(uint8_t *mac, uint16_t universe, uint8_t n) {
-    //TODO: Add ethernet multicast support
+    int retval = 0;
+
+    if (Serial) {
+        Serial.println("");
+        Serial.println(F("Requesting Address via DHCP"));
+        Serial.print(F("- MAC: "));
+        for (int i = 0; i < 6; i++)
+            Serial.print(mac[i], HEX);
+        Serial.println("");
+    }
+
+    retval = Ethernet.begin(mac);
+
+    if (Serial) {
+        if (retval) {
+            Serial.print(F("- IP Address: "));
+            Serial.println(Ethernet.localIP());
+        } else {
+            Serial.println(F("** DHCP FAILED"));
+        }
+    }
+
+    if (retval) {
+        delay(100);
+        IPAddress address = IPAddress(239, 255, ((universe >> 8) & 0xff),
+                ((universe >> 0) & 0xff));
+    
+        retval = udp.beginMulticast(address, E131_DEFAULT_PORT);
+        
+        if (Serial) {
+            if (retval) 
+              Serial.println(F("- Multicast Enabled"));
+            else
+              Serial.println(F("- Failed to enable Multicast"));
+        }
+    }
+
+    return retval;
 }
 
 void E131::beginMulticast(uint8_t *mac, uint16_t universe,
