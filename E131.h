@@ -147,10 +147,16 @@ class E131 {
 
     /* Internal Initializers */
     int initWiFi(const char *ssid, const char *passphrase);
-    int initEthernet(uint8_t *mac, IPAddress ip, IPAddress netmask,
-            IPAddress gateway, IPAddress dns);
     void initUnicast();
+
+#if defined (INT_ETHERNET)
+    int initDHCP(uint8_t *mac);
+    void initStaticIP(uint8_t *mac, IPAddress ip, IPAddress netmask,
+        IPAddress gateway, IPAddress dns);
+    int initMulticast(uint16_t universe, uint8_t n = 1);
+#elif
     void initMulticast(uint16_t universe, uint8_t n = 1);
+#endif
 
  public:
     uint8_t       *data;                /* Pointer to DMX channel data */
@@ -192,7 +198,7 @@ class E131 {
 
     /* Multicast Ethernet Initializers */
     int beginMulticast(uint8_t *mac, uint16_t universe, uint8_t n = 1);
-    void beginMulticast(uint8_t *mac, uint16_t universe,
+    int beginMulticast(uint8_t *mac, uint16_t universe,
             IPAddress ip, IPAddress netmask, IPAddress gateway,
             IPAddress dns, uint8_t n = 1);
 #endif
