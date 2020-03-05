@@ -32,7 +32,7 @@
 #   define _UDP WiFiUDP
 #   define INT_ESP8266
 #   define INT_WIFI
-#elif defined (ARDUINO_ARCH_AVR)
+#else
 #   include <Ethernet.h>
 #   include <EthernetUdp.h>
 #   include <avr/pgmspace.h>
@@ -99,10 +99,10 @@ typedef union {
         uint16_t first_address;
         uint16_t address_increment;
         uint16_t property_value_count;
-        uint8_t  property_values[513];
+        uint8_t  property_values[1 + 512 * 4];
     } __attribute__((packed));
 
-    uint8_t raw[638];
+    uint8_t raw[125 + 1 + 512 * 4];
 } e131_packet_t;
 
 /* Error Types */
@@ -154,7 +154,7 @@ class E131 {
     void initStaticIP(uint8_t *mac, IPAddress ip, IPAddress netmask,
         IPAddress gateway, IPAddress dns);
     int initMulticast(uint16_t universe, uint8_t n = 1);
-#elif
+#else
     void initMulticast(uint16_t universe, uint8_t n = 1);
 #endif
 
@@ -192,15 +192,10 @@ class E131 {
 /****** START - Ethernet ifdef block ******/
 #if defined (INT_ETHERNET)
     /* Unicast Ethernet Initializers */
-    int begin(uint8_t *mac);
-    void begin(uint8_t *mac,
-            IPAddress ip, IPAddress netmask, IPAddress gateway, IPAddress dns);
+    int beginUnicast();
 
     /* Multicast Ethernet Initializers */
-    int beginMulticast(uint8_t *mac, uint16_t universe, uint8_t n = 1);
-    int beginMulticast(uint8_t *mac, uint16_t universe,
-            IPAddress ip, IPAddress netmask, IPAddress gateway,
-            IPAddress dns, uint8_t n = 1);
+    int beginMulticast(uint16_t universe, uint8_t n = 1);
 #endif
 /****** END - Ethernet ifdef block ******/
 
