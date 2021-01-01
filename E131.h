@@ -20,6 +20,8 @@
 #ifndef E131_H_
 #define E131_H_
 
+#define MAX_DMX_VALUES 1024
+
 #include "Arduino.h"
 
 /* Network interface detection.  WiFi for ESP8266 and Ethernet for AVR */
@@ -32,6 +34,13 @@
 #   define _UDP WiFiUDP
 #   define INT_ESP8266
 #   define INT_WIFI
+#elif defined(CORE_TEENSY)
+#   include <NativeEthernet.h>
+#   include <avr/pgmspace.h>
+#   include <utility/util.h>
+#   define _UDP EthernetUDP
+#   define INT_ETHERNET
+#   define NO_DOUBLE_BUFFER
 #else
 #   include <Ethernet.h>
 #   include <EthernetUdp.h>
@@ -99,10 +108,10 @@ typedef union {
         uint16_t first_address;
         uint16_t address_increment;
         uint16_t property_value_count;
-        uint8_t  property_values[1 + 512 * 4];
+        uint8_t  property_values[1 + MAX_DMX_VALUES];
     } __attribute__((packed));
 
-    uint8_t raw[125 + 1 + 512 * 4];
+    uint8_t raw[125 + 1 + MAX_DMX_VALUES];
 } e131_packet_t;
 
 /* Error Types */
