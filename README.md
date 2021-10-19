@@ -1,5 +1,9 @@
+
 E131 - E1.31 (sACN) library for Arduino
 =======================================
+
+###  ** This library is no longer maintained. If you are on an ESP platform, you should be using [ESPAsyncE131](https://github.com/forkineye/ESPAsyncE131) **
+
 This library is to simplify the validation and handling of E1.31 sACN (DMX over Ethernet) traffic.  It supports both Unicast and Multicast configurations and exposes the full E1.31 packet to the user.  Currently, development is targeted for the ESP8266 WiFi module and traditional Ethernet shields.  
 
 ### Supported Hardware
