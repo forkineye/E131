@@ -33,6 +33,7 @@ E131::E131() {
     memset(pbuff1.raw, 0, sizeof(pbuff1.raw));
     packet = &pbuff1;
     pwbuff = packet;
+    data = packet->property_values + 1;
 #else
     memset(pbuff1.raw, 0, sizeof(pbuff1.raw));
     memset(pbuff2.raw, 0, sizeof(pbuff2.raw));
@@ -52,7 +53,7 @@ void E131::initUnicast() {
         Serial.println(E131_DEFAULT_PORT);
     }
 }
-
+#ifndef INT_ETHERNET
 void E131::initMulticast(uint16_t universe, uint8_t n) {
     delay(100);
     IPAddress address = IPAddress(239, 255, ((universe >> 8) & 0xff),
@@ -70,11 +71,13 @@ void E131::initMulticast(uint16_t universe, uint8_t n) {
     }
 
     udp.beginMulticast(WiFi.localIP(), address, E131_DEFAULT_PORT);
+
 #endif
     if (Serial) {
         Serial.println(F("- Multicast Enabled"));
     }
 }
+#endif
 
 /****** START - Wireless ifdef block ******/
 #if defined (INT_ESP8266) || defined (INT_WIFI)
@@ -188,61 +191,25 @@ int E131::beginMulticast(const char *ssid, const char *passphrase,
 #if defined (INT_ETHERNET)
 
 /* Unicast Ethernet Initializers */
-int E131::begin(uint8_t *mac) {
-    int retval = 0;
-
-    if (Serial) {
-        Serial.println("");
-        Serial.println(F("Requesting Address via DHCP"));
-        Serial.print(F("- MAC: "));
-        for (int i = 0; i < 6; i++)
-            Serial.print(mac[i], HEX);
-        Serial.println("");
-    }
-
-    retval = Ethernet.begin(mac);
-
-    if (Serial) {
-        if (retval) {
-            Serial.print(F("- IP Address: "));
-            Serial.println(Ethernet.localIP());
-        } else {
-            Serial.println(F("** DHCP FAILED"));
-        }
-    }
-
-    if (retval)
-        initUnicast();
-
-    return retval;
-}
-
-void E131::begin(uint8_t *mac, IPAddress ip, IPAddress netmask,
-        IPAddress gateway, IPAddress dns) {
-    Ethernet.begin(mac, ip, dns, gateway, netmask);
-    if (Serial) {
-        Serial.println("");
-        Serial.println(F("Static Configuration"));
-        Serial.println(F("- MAC: "));
-        for (int i = 0; i < 6; i++)
-            Serial.print(mac[i], HEX);
-        Serial.print(F("- IP Address: "));
-        Serial.println(Ethernet.localIP());
-    }
-
+int E131::beginUnicast() {
     initUnicast();
 }
 
-/* Multicast Ethernet Initializers */
-int E131::beginMulticast(uint8_t *mac, uint16_t universe, uint8_t n) {
-    //TODO: Add ethernet multicast support
+int E131::beginMulticast(uint16_t universe, uint8_t n) {
+    IPAddress address = IPAddress(239, 255, ((universe >> 8) & 0xff),
+                ((universe >> 0) & 0xff));
+    
+    int retval = udp.beginMulticast(address, E131_DEFAULT_PORT);
+    
+    if (Serial) {
+        if (retval) 
+          Serial.println(F("- Multicast Enabled"));
+        else
+          Serial.println(F("- Failed to enable Multicast"));
+    }
+    return retval;
 }
 
-void E131::beginMulticast(uint8_t *mac, uint16_t universe,
-        IPAddress ip, IPAddress netmask, IPAddress gateway,
-        IPAddress dns, uint8_t n) {
-    //TODO: Add ethernet multicast support
-}
 #endif
 /****** END - Ethernet ifdef block ******/
 
