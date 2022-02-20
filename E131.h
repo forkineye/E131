@@ -160,13 +160,6 @@ typedef union {
   uint8_t raw[638]; /* raw buffer view: 638 bytes */
 } e131_packet_tx_t;
 
-/* Status structure */
-typedef struct {
-    uint32_t    num_packets;
-    uint32_t    sequence_errors;
-    uint32_t    packet_errors;
-} e131_stats_t;
-
 /* Error Types */
 typedef enum {
     ERROR_NONE,
@@ -187,6 +180,7 @@ typedef enum {
 /* Status structure */
 typedef struct {
     uint32_t    num_packets;
+    uint32_t    sequence_errors;
     uint32_t    packet_errors;
     IPAddress   last_clientIP;
     uint16_t    last_clientPort;

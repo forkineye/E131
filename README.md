@@ -2,7 +2,7 @@
 E131 - E1.31 (sACN) library for Arduino
 =======================================
 
-## Fork using code from hoeser-medien.de hoeser-medien.de/2017/03/e131-sender-based-on-library-created-by-forkineye/
+## Fork using code with option to send based on code from hoeser-medien.de/2017/03/e131-sender-based-on-library-created-by-forkineye/
 
 ###  ** This library is no longer maintained. If you are on an ESP platform, you should be using [ESPAsyncE131](https://github.com/forkineye/ESPAsyncE131)
 
