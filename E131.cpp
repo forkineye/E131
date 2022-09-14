@@ -53,19 +53,30 @@ void E131::initUnicast() {
     }
 }
 
+/*
+ * Converts a DMX 'universe' to the corresponding e131 multicast address.
+ *
+ * e131 mandates a fixed multicase base-IP of 239.255.0.0, to which
+ * the (two-byte, 1-63.999) universe value is added.
+ * (effectively defining the last two positions of the IP)
+ */
+IPAddress E131::multicastIPFor(uint16_t universe) {
+    return IPAddress(239, 255,
+            ((universe >> 8) & 0xff),
+            ((universe >> 0) & 0xff)
+    );
+}
+
 void E131::initMulticast(uint16_t universe, uint8_t n) {
     delay(100);
-    IPAddress address = IPAddress(239, 255, ((universe >> 8) & 0xff),
-            ((universe >> 0) & 0xff));
+    IPAddress address = multicastIPFor(universe);
 #ifdef INT_ESP8266
     ip_addr_t ifaddr;
     ip_addr_t multicast_addr;
 
     ifaddr.addr = static_cast<uint32_t>(WiFi.localIP());
     for (uint8_t i = 1; i < n; i++) {
-        multicast_addr.addr = static_cast<uint32_t>(IPAddress(239, 255,
-                (((universe + i) >> 8) & 0xff), (((universe + i) >> 0)
-                & 0xff)));
+        multicast_addr.addr = static_cast<uint32_t>(MulticastIPFor(universe + i));
         igmp_joingroup(&ifaddr, &multicast_addr);
     }
 
